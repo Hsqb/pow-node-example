@@ -1,0 +1,15 @@
+{
+  "name": "gxchw",
+  "version": "1.0.0",
+  "description": "",
+  "main": "ex1_simple.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "fully-connected-topology": "^1.1.1",
+    "threads": "^0.12.0"
+  }
+}
