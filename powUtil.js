@@ -20,7 +20,7 @@ const getHashHex = (data) => {
     return crypto.createHash("sha256").update(data).digest('hex');
 }
 const isValidHash = (hash, difficulty) =>{
-    return hash.slice(0, difficulty) == getZeroStr(difficulty);
+    return hash.slice(0, difficulty) === getZeroStr(difficulty);
 }
 const getNextNonce = function(miningStrategy, nonce, timestamp){
     switch(miningStrategy){
@@ -50,7 +50,7 @@ const getNextNonce = function(miningStrategy, nonce, timestamp){
     return {nonce, timestamp};
 }
 const getHashFromBlock = function(block){
-    if(block.header.blockNumber == 0) return 0;
+    if(block.header.blockNumber === 0) return 0;
     let hash = getHashHex(block.header.prevHash + 
         JSON.stringify(block.body.data) + 
         block.header.timestamp + 

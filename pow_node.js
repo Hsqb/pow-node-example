@@ -3,7 +3,7 @@ const PoWUtil = require('./powUtil');
 const Block = require('./Block');
 const fs = require('fs');
 
-const threads = require('threads')
+const threads = require('threads');
 const tConfig = threads.config;
 const spawn = threads.spawn;
 tConfig.set({ basepath : {
@@ -32,7 +32,7 @@ function PoWNode(miningStrategy, difficulty, url, peerList){
             }
             let dataObj = JSON.parse(rawStr);
             //상대에게 누가 더 긴지 확인요청이 오면 자신과 비교하여 알려준다.
-            if(dataObj.message == "whoisthebest"){
+            if(dataObj.message === "whoisthebest"){
                 this.isSync = true;
                 if(this.blockData.length > dataObj.length){
                     socket.write(JSON.stringify({message:"imbetter", length:this.blockData.length})+" ");
@@ -44,21 +44,21 @@ function PoWNode(miningStrategy, difficulty, url, peerList){
                     //블록수가 같으면 마지막 블록을 던져서 값을 확인해볼수 있도록 한다.
                 }
             }
-            if(dataObj.message == "imbetter"){
+            if(dataObj.message === "imbetter"){
                 if(this.bestPeer.length < dataObj.length){
                     this.bestPeer.peer = peer;
                     this.bestPeer.length = dataObj.length;
                 }
                 socket.write(JSON.stringify({message:"givemeyours"}));
             }
-            if(dataObj.message == "yourebetter"){
+            if(dataObj.message === "yourebetter"){
                 //별로 할일이 없음
             }
-            if(dataObj.message == "same"){
-                if(this.blockData[this.blockData.length - 1].header.blockNumber == dataObj.lastBlock.header.blockNumber &&
-                    this.blockData[this.blockData.length - 1].header.nonce == dataObj.lastBlock.header.nonce &&
-                    this.blockData[this.blockData.length - 1].header.prevHash == dataObj.lastBlock.header.prevHash &&
-                    this.blockData[this.blockData.length - 1].header.difficulty == dataObj.lastBlock.header.difficulty
+            if(dataObj.message === "same"){
+                if(this.blockData[this.blockData.length - 1].header.blockNumber === dataObj.lastBlock.header.blockNumber &&
+                    this.blockData[this.blockData.length - 1].header.nonce === dataObj.lastBlock.header.nonce &&
+                    this.blockData[this.blockData.length - 1].header.prevHash === dataObj.lastBlock.header.prevHash &&
+                    this.blockData[this.blockData.length - 1].header.difficulty === dataObj.lastBlock.header.difficulty
                     ){
                         //싱크종료
                         console.log("Chian is same. Sync is finished.");
@@ -67,11 +67,11 @@ function PoWNode(miningStrategy, difficulty, url, peerList){
                         console.log("Wrong Chain");
                     }
             }
-            if(dataObj.message == "givemeyours"){
+            if(dataObj.message === "givemeyours"){
                 socket.write(JSON.stringify({message:"thisissyncblocks", blocks:this.blockData}));
                 this.isSync = false;
             }
-            if(dataObj.message == "thisissyncblocks"){
+            if(dataObj.message === "thisissyncblocks"){
                 let blocks = dataObj.blocks;
                 for(let i = 0 ; i < this.blockData.length; i++){
                     if(blocks[i].header.prevHash != this.blockData[i].header.prevHash){
@@ -85,7 +85,7 @@ function PoWNode(miningStrategy, difficulty, url, peerList){
                 this.isSync = false;
                 console.log("Synched BlockData Len : "+this.blockData.length);
             }
-            if(dataObj.message == "thisisanewblock"){
+            if(dataObj.message === "thisisanewblock"){
                 let block = dataObj.block
                 let data = block.header.prevHash + JSON.stringify(block.body.data) +
                             block.header.timestamp +block.header.nonce;
@@ -93,8 +93,8 @@ function PoWNode(miningStrategy, difficulty, url, peerList){
 
                 if(PoWUtil.isValidHash(hash, block.header.difficulty)){
                     let lastBlock = this.blockData[this.blockData.length - 1];
-                    if((lastBlock.header.blockNumber + 1) == block.header.blockNumber &&
-                        PoWUtil.getHashFromBlock(lastBlock) == block.header.prevHash){
+                    if((lastBlock.header.blockNumber + 1) === block.header.blockNumber &&
+                        PoWUtil.getHashFromBlock(lastBlock) === block.header.prevHash){
                         this.blockData.push(block);
                         console.log("Block "+block.header.blockNumber+" INS by "+peer+" len "+this.blockData.length);
                         this.miningStart();
@@ -113,7 +113,7 @@ function PoWNode(miningStrategy, difficulty, url, peerList){
     this.difficulty = difficulty;
     this.miner = new Miner(miningStrategy);
     this.init = function(){
-        if(this.blockData.length == 0){
+        if(this.blockData.length === 0){
             this.blockData.push(new Block());
         }
         this.miningStart();
@@ -134,8 +134,8 @@ function PoWNode(miningStrategy, difficulty, url, peerList){
                     this.miningStart(1000);
                 }else{
                     let lastBlock = this.blockData[this.blockData.length - 1];
-                    if((lastBlock.header.blockNumber + 1) == newBlock.header.blockNumber &&
-                        PoWUtil.getHashFromBlock(lastBlock) == newBlock.header.prevHash){
+                    if((lastBlock.header.blockNumber + 1) === newBlock.header.blockNumber &&
+                        PoWUtil.getHashFromBlock(lastBlock) === newBlock.header.prevHash){
                         console.log("Block "+newBlock.header.blockNumber+" CRT by "+url+" len "+this.blockData.length);//+JSON.stringify(newBlock)
                         this.blockData.push(newBlock);
                         Object.keys(this.currentConnectedPeer).map(addr=>{
@@ -179,7 +179,7 @@ function Miner(miningStrategy=0){
     this.miningBlock = function(){
         let prevBlock = this.prevBlock;
         let prevHashVal = PoWUtil.getHashFromBlock(this.prevBlock);
-        if(prevHashVal == null){
+        if(prevHashVal === null){
             console.error("Prev block : "+JSON.stringify(this.prevBlock))
             throw new Error("Wrong Block in Blockchain.");
         } 
