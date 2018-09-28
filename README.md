@@ -20,4 +20,9 @@ $ npm install
 $ node main.js [ ASCENT | DESCENT | RANDOM ] [ Difficulty 3 ~ ] [ URL : localhost:4000 ~ 4009 ]
 
 ex) $ node main.js ASCENT 4 localhost:4000
+
+OR
+
+$ npm run pow_asc;
+$ npm run pow_desc;
 ````
