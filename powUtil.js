@@ -1,6 +1,10 @@
 const crypto = require('crypto');
+
+const ZERO_HASH = "0000000000000000000000000000000000000000000000000000000000000000";
 let memo = {};
-const getZeroStr = (count = 1) =>{
+
+const getTimestamp = () => { return parseInt(Date.now()/1000, 10) };
+const getZeroStr = (count = 1) => {
     if(memo[count] != undefined) return memo[count];
     let str = ""
     for(let i = 0; i < count ; i++){
@@ -19,9 +23,15 @@ const getHashBuffer = (data) => {
 const getHashHex = (data) => {
     return crypto.createHash("sha256").update(data).digest('hex');
 }
-const isValidHash = (hash, difficulty) =>{
+const isValidHash = (hash, difficulty) => {
     return hash.slice(0, difficulty) === getZeroStr(difficulty);
 }
+const isValidChain = (prevBlock, currentBlock) => {
+    return isValidHash(getHashFromBlock(prevBlock), prevBlock.header.difficulty) && 
+           isValidHash(getHashFromBlock(currentBlock), currentBlock.header.difficulty) && 
+           getHashFromBlock(prevBlock) == currentBlock.header.prevHash;
+}
+
 const getNextNonce = function(miningStrategy, nonce, timestamp){
     switch(miningStrategy){
         case 1 : //desence 
@@ -49,24 +59,35 @@ const getNextNonce = function(miningStrategy, nonce, timestamp){
     }
     return {nonce, timestamp};
 }
-const getHashFromBlock = function(block){
-    if(block.header.blockNumber === 0) return 0;
+const getHashFromBlock = (block) => {
+    if(block.header.blockNumber === 0){
+        return ZERO_HASH;
+    } 
     let hash = getHashHex(block.header.prevHash + 
         JSON.stringify(block.body.data) + 
         block.header.timestamp + 
         block.header.nonce);
-    if(isValidHash(hash, block.header.difficulty))
+    if(isValidHash(hash, block.header.difficulty)){
         return hash;
-    else
+    }else{
         return null;
+    }
+}
+
+const writeOnSocket = (socket, data)=>{
+    socket.write(JSON.stringify(data)+" ");
 }
 
 module.exports = {
-    getZeroStr ,
-    getRandomData ,
-    getHashBuffer ,
-    getHashHex ,
-    getNextNonce,
-    isValidHash,
-    getHashFromBlock
+    ZERO_HASH : ZERO_HASH,
+    getTimestamp : getTimestamp,
+    getZeroStr : getZeroStr,
+    getRandomData : getRandomData,
+    getHashBuffer : getHashBuffer,
+    getHashHex : getHashHex,
+    getNextNonce : getNextNonce,
+    isValidHash : isValidHash,
+    isValidChain : isValidChain,
+    getHashFromBlock : getHashFromBlock,
+    writeOnSocket : writeOnSocket
 }

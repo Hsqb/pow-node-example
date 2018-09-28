@@ -1,13 +1,15 @@
 {
   "name": "gxchw",
-  "version": "1.0.0",
-  "description": "",
-  "main": "ex1_simple.js",
+  "version": "1.0.1",
+  "description": "POW concept Implement",
+  "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "pow_asc"  : "node ./main.js ASCENT 3 localhost:4001",
+    "pow_desc" : "node ./main.js DESCENT 3 localhost:4005"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Hsqb",
+  "license": "MIT",
   "dependencies": {
     "fully-connected-topology": "^1.1.1",
     "threads": "^0.12.0"
